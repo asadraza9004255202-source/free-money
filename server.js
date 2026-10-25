@@ -10,7 +10,7 @@ const num = (v, d) => { const n = Number(v); return Number.isFinite(n) && n > 0 
 const ADS_PER_TASK = num(process.env.ADS_PER_TASK, 25);        // 1 task = kitne ads
 const REWARD_PER_TASK = num(process.env.REWARD_PER_TASK, 1);   // 1 task ka reward (Rs)
 const MIN_TASKS = num(process.env.MIN_TASKS, 5);               // itne task ke baad hi withdraw
-const AD_SECONDS = num(process.env.AD_SECONDS, 10);            // har ad kitni der dekhna hai
+const AD_SECONDS = num(process.env.AD_SECONDS, 5);           // har ad kitni der dekhna hai
 const STALE_MS = num(process.env.STALE_SECONDS, 90) * 1000;    // itni der page band raha => task incomplete (refresh se kuch nahi hota)
 // =====================================================================================
 
