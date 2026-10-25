@@ -188,16 +188,37 @@ function paintTask(){
    (Google AdSense / Adsterra / Monetag etc.). Abhi 5 alag-alag
    size ke demo boxes hain jo ads ke jagah dikhte hain.
    ============================================================ */
-function adHtml(i){
-  const t=i%5, sizes=['320x100','300x250','Wide banner','160x300','336x280'];
-  return `<div class="slot t${t}"><div>Ad Box #${i+1}<br><small>${sizes[t]} — yaha apna ad code lagao</small></div></div>`;
+const AD_UNITS=[
+  {w:300,h:250,key:'9e83822f9c088e0502cd3a55598627fc'},
+  {w:320,h:50, key:'10163c50b7a4ee8449e883698e7a7c64'},
+  {w:160,h:600,key:'cccb0daedd0f651c79a46992c4e42e1b'},
+  {w:160,h:300,key:'9a7d9255c3d69ff4c2dc1d8e30843c69'},
+  {native:true,h:300,id:'2d557d50f49e3a3c731c6c8c460fbe23'}
+];
+// Har ad apne iframe me chalta hai (Adsterra ka code isi tarah sahi chalta hai)
+function adDoc(u){
+  const S='<scr'+'ipt', E='</scr'+'ipt>';
+  if(u.native){
+    return '<body style="margin:0">'+S+' async data-cfasync="false" src="https://bauval.org/21/'+u.id+'">'+E+'<div id="container-'+u.id+'"></div></body>';
+  }
+  return '<body style="margin:0">'+S+'>atOptions={"key":"'+u.key+'","format":"iframe","height":'+u.h+',"width":'+u.w+',"params":{}};'+E+
+         S+' src="https://bauval.org/22/'+u.key+'">'+E+'</body>';
+}
+function setAd(el,i){
+  const u=AD_UNITS[i%AD_UNITS.length];
+  el.innerHTML='';
+  const f=document.createElement('iframe');
+  f.setAttribute('scrolling','no');
+  f.style.cssText='border:0;display:block;margin:0 auto;max-width:100%;background:#fff;width:'+(u.native?'100%':u.w+'px')+';height:'+u.h+'px';
+  f.srcdoc=adDoc(u);
+  el.appendChild(f);
 }
 $('btnAd').onclick=async()=>{
   if(running) return;
   try{ await api('/api/ad/start',{token,index:me.adsWatched}); }
   catch(e){ await refresh(true); return; }
   running=true; $('btnAd').classList.add('hidden');
-  $('adSlot').innerHTML=adHtml(me.adsWatched); $('adArea').classList.remove('hidden');
+  setAd($('adSlot'),me.adsWatched); $('adArea').classList.remove('hidden');
   remaining=cfg.seconds; $('tn').textContent=remaining;
   timer=setInterval(async()=>{
     const hid=document.hidden; $('pz').classList.toggle('hidden',!hid);
