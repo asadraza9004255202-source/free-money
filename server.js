@@ -11,7 +11,7 @@ const ADS_PER_TASK = num(process.env.ADS_PER_TASK, 25);        // 1 task = kitne
 const REWARD_PER_TASK = num(process.env.REWARD_PER_TASK, 1);   // 1 task ka reward (Rs)
 const MIN_TASKS = num(process.env.MIN_TASKS, 5);               // itne task ke baad hi withdraw
 const AD_SECONDS = num(process.env.AD_SECONDS, 10);            // har ad kitni der dekhna hai
-const STALE_MS = 3 * 60 * 1000;                                // 3 min koi activity nahi => incomplete
+const STALE_MS = num(process.env.STALE_SECONDS, 90) * 1000;    // itni der page band raha => task incomplete (refresh se kuch nahi hota)
 // =====================================================================================
 
 const DB_FILE = path.join(__dirname, 'data.json');
@@ -101,6 +101,7 @@ app.post('/api/register', (req, res) => {
 app.get('/api/me', (req, res) => {
   const u = byToken(req.query.token);
   if (!u) return res.status(404).json({ error: 'not found' });
+  effStatus(u); // pehle check: kya user bahut der baad aaya? (to task incomplete)
   if (u.status === 'in_progress' || u.status === 'registered') u.lastActive = Date.now();
   res.json(publicUser(u));
 });
