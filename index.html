@@ -10,7 +10,7 @@
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
 .wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
 h1{font-size:22px;margin:6px 0 4px}
-.sub{color:var(--mute);font-size:14px;margin-bottom:18px}
+.sub{color:var(--mute);font-size:14px;margin-bottom:14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
 label{display:block;font-size:13px;color:var(--mute);margin:12px 0 6px}
 input[type=text],input[type=tel]{width:100%;padding:13px;border-radius:10px;border:1px solid var(--line);background:#0e1626;color:var(--ink);font-size:16px}
@@ -21,29 +21,29 @@ input:focus{outline:2px solid var(--blue);border-color:transparent}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .btn.blue{background:var(--blue);color:#04202e}
 .err{background:#3b1217;border:1px solid #7f1d1d;color:#fecaca;padding:12px;border-radius:10px;font-size:14px;margin-top:12px;display:none}
-.reward{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0f3d26,#0b2a40);border:1px solid #1d5b3a;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:14px}
-.reward b{font-size:20px;color:var(--acc)}
+.reward{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0f3d26,#0b2a40);border:1px solid #1d5b3a;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:14px;line-height:1.45}
+.reward b{color:var(--acc)}
 .hidden{display:none!important}
 .bar{height:12px;background:#0e1626;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
 .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--acc));transition:width .4s}
 .prog{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
-.tile{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;background:#0e1626;border:1px solid var(--line);color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin:14px 0}
+.tile{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;background:#0e1626;border:1px solid var(--line);color:var(--mute)}
 .tile.done{background:#12361f;border-color:#1d5b3a;color:var(--acc)}
 .tile.cur{border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 2px rgba(56,189,248,.25)}
-/* ad boxes */
+/* wallet */
+.wallet{display:none;background:#0e1626;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px}
+.wallet .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.wallet .amt{font-size:26px;font-weight:800;color:var(--acc)}
+.wallet small{color:var(--mute)}
+.wallet .ready{color:var(--acc);font-weight:700;font-size:13px;margin-top:8px}
+/* ad box */
 .adbox{margin-top:12px;border-radius:12px;border:1px solid var(--line);background:#0e1626;padding:10px}
 .adtag{font-size:11px;color:var(--mute);letter-spacing:.08em;margin-bottom:6px}
-.slot{margin:0 auto;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:700;overflow:hidden;max-width:100%}
-.t0{width:320px;height:100px;background:linear-gradient(120deg,#7c3aed,#db2777)}
-.t1{width:300px;height:250px;background:linear-gradient(160deg,#0ea5e9,#6366f1)}
-.t2{width:100%;height:90px;background:linear-gradient(90deg,#f59e0b,#ef4444)}
-.t3{width:160px;height:300px;background:linear-gradient(180deg,#10b981,#0f766e)}
-.t4{width:336px;height:280px;max-width:100%;background:linear-gradient(135deg,#f43f5e,#fb923c)}
 .timer{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;font-weight:700}
 .timer .n{width:42px;height:42px;border-radius:50%;border:3px solid var(--blue);display:flex;align-items:center;justify-content:center}
 .paused{color:var(--warn);font-size:13px;text-align:center;margin-top:6px}
-.big{text-align:center;padding:26px 10px}
+.big{text-align:center;padding:20px 10px}
 .big .ico{font-size:54px}
 .note{font-size:12px;color:var(--mute);margin-top:10px;text-align:center}
 /* success overlay */
@@ -54,6 +54,7 @@ input:focus{outline:2px solid var(--blue);border-color:transparent}
 #success .pop{transform-origin:center;animation:pop .6s ease}
 #success h2{font-size:26px;margin:18px 0 6px;color:#eafff2;opacity:0;animation:fade .6s 1.2s forwards}
 #success p{color:#a7e8c3;margin:0;opacity:0;animation:fade .6s 1.5s forwards}
+#success .btn{max-width:320px;opacity:0;animation:fade .6s 2s forwards}
 .conf{position:absolute;top:-10px;width:10px;height:16px;opacity:.9;animation:fall linear forwards}
 @keyframes dr{to{stroke-dashoffset:0}}
 @keyframes fade{to{opacity:1}}
@@ -64,9 +65,17 @@ input:focus{outline:2px solid var(--blue);border-color:transparent}
 <body>
 <div class="wrap">
   <h1>💸 AdReward</h1>
-  <div class="sub">25 ads dekho aur <b id="rw">₹5</b> kamao</div>
+  <div class="sub">Ads dekho, wallet me paise jodo, phir withdraw karo</div>
 
-  <div class="reward"><span>🎁</span><div><b id="rw2">₹5</b> — 25 ads poore dekhne par<br><small style="color:var(--mute)">Har ad kam se kam <span id="secs">10</span> second dekhna zaroori hai</small></div></div>
+  <div class="reward"><span>🎁</span><div id="rwText">...</div></div>
+
+  <!-- WALLET -->
+  <div class="wallet" id="wallet">
+    <div class="top"><div><small>Aapka wallet</small><div class="amt" id="wAmt">₹0</div></div><small id="wTasks"></small></div>
+    <div class="bar"><i id="wBar"></i></div>
+    <div style="margin-top:8px;font-size:13px;color:var(--mute)" id="wTxt"></div>
+    <div class="ready hidden" id="wReady"></div>
+  </div>
 
   <!-- REGISTER -->
   <div id="vReg" class="card hidden">
@@ -87,48 +96,50 @@ input:focus{outline:2px solid var(--blue);border-color:transparent}
 
   <!-- TASK -->
   <div id="vTask" class="card hidden">
-    <div class="prog"><b>Aapka task</b><span><b id="cnt">0</b> / <span class="tot">25</span> ads</span></div>
+    <div class="prog"><b id="taskTitle">Task</b><span><b id="cnt">0</b> / <span class="tot">25</span> ads</span></div>
     <div class="bar"><i id="barI"></i></div>
     <div class="grid" id="grid"></div>
-    <button class="btn blue" id="btnAd">▶ Ad dekho</button>
+    <button class="btn blue" id="btnAd">▶ Task shuru karo</button>
     <div id="adArea" class="hidden">
       <div class="adbox">
         <div class="adtag">ADVERTISEMENT</div>
         <div id="adSlot"></div>
       </div>
-      <div class="timer"><div class="n" id="tn">10</div><span>second baaki...</span></div>
+      <div class="timer"><div class="n" id="tn">10</div><span>second baaki... (agla ad apne aap aayega)</span></div>
       <div class="paused hidden" id="pz">⏸ Tab par wapas aao, timer ruka hua hai</div>
     </div>
-    <div class="note">⚠ Beech me page band karne ya chhodne par task adhura (incomplete) ho jayega aur dobara 1 se shuru karna padega.</div>
+    <div class="note">⚠ Beech me page band karne ya chhodne par ye task adhura (incomplete) ho jayega aur is task ko dobara 1 se shuru karna padega. Pehle poore kiye hue tasks surakshit rehte hain.</div>
+  </div>
+
+  <!-- TASK DONE -->
+  <div id="vDone" class="card hidden">
+    <div class="big"><div class="ico">🎉</div>
+    <h2 style="margin:8px 0">Task poora ho gaya!</h2>
+    <p style="color:var(--mute);line-height:1.5" id="doneTxt"></p></div>
+    <button class="btn" id="btnNext">▶ Agla task shuru karo</button>
   </div>
 
   <!-- INCOMPLETE -->
   <div id="vInc" class="card hidden">
     <div class="big"><div class="ico">❌</div>
     <h2 style="color:#fecaca">Task incomplete!</h2>
-    <p style="color:var(--mute)">Aap beech me hi chhod kar chale gaye the. Paise tabhi milenge jab <b class="tot">25</b> ads poore dekhoge.</p></div>
+    <p style="color:var(--mute)">Aap beech me hi chhod kar chale gaye the. Ye task tabhi gina jayega jab <b class="tot">25</b> ads poore dekhoge. Pehle ke poore tasks surakshit hain.</p></div>
     <button class="btn" id="btnRestart">Dobara shuru karo</button>
-  </div>
-
-  <!-- WAITING PAYMENT -->
-  <div id="vWait" class="card hidden">
-    <div class="big"><div class="ico">⏳</div>
-    <h2>Task poora ho gaya! 🎉</h2>
-    <p style="color:var(--mute)">Admin aapka task check karke <b id="rw3">₹5</b> aapke QR par bhej raha hai.<br>Ye page khula rakho — payment hote hi yaha green tick aa jayega.</p></div>
   </div>
 </div>
 
-<!-- SUCCESS -->
+<!-- SUCCESS (payment) -->
 <div id="success" class="hidden">
   <svg viewBox="0 0 120 120" class="pop"><circle class="c" cx="60" cy="60" r="48"/><path class="t" d="M36 62 L54 80 L86 44"/></svg>
   <h2>Payment ho gaya! ✅</h2>
   <p id="sName"></p>
-  <p style="margin-top:6px">Aapke QR par <b id="rw4">₹5</b> bhej diye gaye hain. Shukriya! 🙏</p>
+  <p style="margin-top:6px">Aapke QR par <b id="sAmt">₹0</b> bhej diye gaye hain. Shukriya! 🙏</p>
+  <button class="btn" id="btnAck">Aage kaam karo</button>
 </div>
 
 <script>
 const $=(id)=>document.getElementById(id);
-let cfg={total:25,seconds:10,reward:5}, token=localStorage.getItem('ar_token'), me=null, shown=null, qrData=null, timer=null, remaining=0, running=false;
+let cfg={adsPerTask:25,seconds:10,rewardPerTask:1,minTasks:5}, token=localStorage.getItem('ar_token'), me=null, shown=null, qrData=null, timer=null, remaining=0, running=false;
 
 async function api(url,body){
   const r=await fetch(url,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});
@@ -137,10 +148,10 @@ async function api(url,body){
   return j;
 }
 function show(v){
-  ['vReg','vTask','vInc','vWait'].forEach(x=>$(x).classList.toggle('hidden',x!==v));
+  ['vReg','vTask','vDone','vInc'].forEach(x=>$(x).classList.toggle('hidden',x!==v));
+  $('wallet').style.display=(v==='vReg')?'none':'block';
   shown=v;
 }
-function rupee(){return '₹'+cfg.reward}
 
 // ----- QR upload (chhota karke) -----
 $('fQr').addEventListener('change',e=>{
@@ -173,27 +184,43 @@ $('btnReg').onclick=async()=>{
   b.disabled=false; b.textContent='Register karke shuru karo';
 };
 
+// ----- wallet -----
+function paintWallet(){
+  if(!me) return;
+  const w=me.unpaidTasks*cfg.rewardPerTask;
+  $('wAmt').textContent='₹'+w;
+  $('wTasks').textContent='Poore tasks: '+me.tasksDone;
+  $('wBar').style.width=Math.min(100,me.unpaidTasks/cfg.minTasks*100)+'%';
+  const need=Math.max(0,cfg.minTasks-me.unpaidTasks);
+  $('wTxt').textContent=me.payable?'Withdraw ke liye taiyaar!':'Withdraw: '+me.unpaidTasks+' / '+cfg.minTasks+' task (aur '+need+' task baaki)';
+  $('wReady').classList.toggle('hidden',!me.payable);
+  $('wReady').textContent='✅ ₹'+w+' withdraw ready — admin check karke QR par bhejega. Page khula rakho.';
+}
+
 // ----- TASK -----
 function paintTask(){
-  const w=me.adsWatched; $('cnt').textContent=w; $('barI').style.width=(w/cfg.total*100)+'%';
+  const w=me.adsWatched, T=cfg.adsPerTask;
+  $('cnt').textContent=w; $('barI').style.width=(w/T*100)+'%';
+  $('taskTitle').textContent='Task #'+(me.tasksDone+1);
   const g=$('grid'); g.innerHTML='';
-  for(let i=0;i<cfg.total;i++){
+  for(let i=0;i<T;i++){
     const d=document.createElement('div'); d.className='tile'+(i<w?' done':(i===w?' cur':''));
     d.textContent=i<w?'✓':i+1; g.appendChild(d);
   }
-  $('btnAd').textContent='▶ Ad #'+(w+1)+' dekho';
+  $('btnAd').textContent=w===0?'▶ Task shuru karo':'▶ Aage ads dekho';
+  paintWallet();
 }
+
 /* ============================================================
-   AD SLOTS — yaha apne asli ad network ka code lagao
-   (Google AdSense / Adsterra / Monetag etc.). Abhi 5 alag-alag
-   size ke demo boxes hain jo ads ke jagah dikhte hain.
+   ADSTERRA AD UNITS — bade ads pehle aate hain
    ============================================================ */
 const AD_UNITS=[
   {w:300,h:250,key:'9e83822f9c088e0502cd3a55598627fc'},
-  {w:320,h:50, key:'10163c50b7a4ee8449e883698e7a7c64'},
+  {native:true,h:300,id:'2d557d50f49e3a3c731c6c8c460fbe23'},
   {w:160,h:600,key:'cccb0daedd0f651c79a46992c4e42e1b'},
+  {w:300,h:250,key:'9e83822f9c088e0502cd3a55598627fc'},
   {w:160,h:300,key:'9a7d9255c3d69ff4c2dc1d8e30843c69'},
-  {native:true,h:300,id:'2d557d50f49e3a3c731c6c8c460fbe23'}
+  {w:320,h:50, key:'10163c50b7a4ee8449e883698e7a7c64'}
 ];
 // Har ad apne iframe me chalta hai (Adsterra ka code isi tarah sahi chalta hai)
 function adDoc(u){
@@ -213,62 +240,88 @@ function setAd(el,i){
   f.srcdoc=adDoc(u);
   el.appendChild(f);
 }
-$('btnAd').onclick=async()=>{
+
+function stopAd(){
+  if(timer){clearInterval(timer);timer=null;}
+  running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden');
+}
+async function startAd(){
   if(running) return;
   try{ await api('/api/ad/start',{token,index:me.adsWatched}); }
   catch(e){ await refresh(true); return; }
   running=true; $('btnAd').classList.add('hidden');
-  setAd($('adSlot'),me.adsWatched); $('adArea').classList.remove('hidden');
+  setAd($('adSlot'),me.adsWatched+me.tasksDone*cfg.adsPerTask); $('adArea').classList.remove('hidden');
   remaining=cfg.seconds; $('tn').textContent=remaining;
-  timer=setInterval(async()=>{
-    const hid=document.hidden; $('pz').classList.toggle('hidden',!hid);
-    if(hid) return;
-    remaining--; $('tn').textContent=Math.max(remaining,0);
-    if(remaining<=0){
-      clearInterval(timer); timer=null;
-      try{
-        const r=await api('/api/ad/complete',{token,index:me.adsWatched});
-        me=r; running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden');
-        if(me.status==='completed'){ show('vWait'); } else paintTask();
-      }catch(e){ running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden'); await refresh(true); }
-    }
-  },1000);
-};
+  if(timer) clearInterval(timer);
+  timer=setInterval(tick,1000);
+}
+async function tick(){
+  const hid=document.hidden; $('pz').classList.toggle('hidden',!hid);
+  if(hid) return;
+  remaining--; $('tn').textContent=Math.max(remaining,0);
+  if(remaining>0) return;
+  clearInterval(timer); timer=null;
+  try{
+    const r=await api('/api/ad/complete',{token,index:me.adsWatched});
+    me=r; stopAd();
+    if(r.taskJustDone){ showDone(); }
+    else { paintTask(); setTimeout(startAd,400); } // agla ad apne aap
+  }catch(e){ stopAd(); await refresh(true); }
+}
+$('btnAd').onclick=startAd;
+
+function showDone(){
+  const w=me.unpaidTasks*cfg.rewardPerTask;
+  let t='+₹'+cfg.rewardPerTask+' wallet me jud gaye. Wallet: ₹'+w+'. ';
+  t+=me.payable?'Aapka withdraw ready hai — admin jald hi QR par bhejega.':'Withdraw ke liye '+(cfg.minTasks-me.unpaidTasks)+' task aur poore karo.';
+  $('doneTxt').textContent=t;
+  show('vDone'); paintWallet();
+}
+$('btnNext').onclick=()=>{ show('vTask'); paintTask(); };
 
 $('btnRestart').onclick=async()=>{
   try{ me=await api('/api/restart',{token}); render(true);}catch(e){await refresh(true)}
 };
 
-// ----- render by status -----
-function render(force){
-  if(!me) return;
-  if(me.status==='paid'){ showSuccess(); return; }
-  if(me.status==='completed'){ if(shown!=='vWait'||force) show('vWait'); return; }
-  if(me.status==='incomplete'){
-    if(timer){clearInterval(timer);timer=null;} running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden');
-    if(shown!=='vInc'||force) show('vInc'); return;
-  }
-  // registered / in_progress
-  if(shown!=='vTask'||force){ show('vTask'); paintTask(); }
-}
-function showSuccess(){
-  if(!$('success').classList.contains('hidden')) return;
-  $('sName').textContent=me.name; $('success').classList.remove('hidden');
+// ----- payment green tick -----
+function showTick(){
+  if(!me.tick || !$('success').classList.contains('hidden')) return;
+  $('sName').textContent=me.name; $('sAmt').textContent='₹'+me.tick.amount;
+  const s=$('success'); s.classList.remove('hidden');
+  s.querySelectorAll('.conf').forEach(x=>x.remove());
   for(let i=0;i<60;i++){
     const c=document.createElement('div'); c.className='conf';
     c.style.left=Math.random()*100+'vw'; c.style.background=['#22c55e','#38bdf8','#f59e0b','#f43f5e','#a78bfa'][i%5];
     c.style.animationDuration=(2+Math.random()*2.5)+'s'; c.style.animationDelay=(1+Math.random()*1.5)+'s';
-    $('success').appendChild(c);
+    s.appendChild(c);
   }
-  localStorage.removeItem('ar_token');
+}
+$('btnAck').onclick=async()=>{
+  $('success').classList.add('hidden');
+  try{ await api('/api/ack',{token}); if(me) me.tick=null; }catch(e){}
+  paintWallet();
+};
+
+// ----- render by status -----
+function render(force){
+  if(!me) return;
+  paintWallet();
+  if(me.tick) showTick();
+  if(me.status==='incomplete'){
+    stopAd();
+    if(shown!=='vInc'||force) show('vInc'); return;
+  }
+  if(shown==='vDone' && !force) return;      // task-done screen par rehne do
+  if(shown!=='vTask'||force){ show('vTask'); paintTask(); }
 }
 async function refresh(force){
   if(!token){ show('vReg'); return; }
   try{
     const r=await api('/api/me?token='+token);
-    const changed=!me||r.status!==me.status;
-    if(running && r.status==='in_progress'){ return; } // timer chal raha hai, UI mat chhedo
-    me=r; render(force||changed);
+    if(running && r.status==='in_progress'){ // timer chal raha hai, UI mat chhedo (sirf wallet/tick update)
+      me.unpaidTasks=r.unpaidTasks; me.payable=r.payable; me.tick=r.tick; paintWallet(); if(me.tick) showTick(); return;
+    }
+    me=r; render(force);
   }catch(e){
     if(e.status===404){ localStorage.removeItem('ar_token'); token=null; show('vReg'); }
   }
@@ -276,18 +329,18 @@ async function refresh(force){
 
 // page chhodne par incomplete mark
 window.addEventListener('pagehide',()=>{
-  if(token && me && me.status==='in_progress' && me.adsWatched<cfg.total){
+  if(token && me && me.status==='in_progress'){
     navigator.sendBeacon('/api/leave',new Blob([JSON.stringify({token})],{type:'application/json'}));
   }
 });
 window.addEventListener('beforeunload',e=>{
-  if(me && me.status==='in_progress' && me.adsWatched<cfg.total){ e.preventDefault(); e.returnValue=''; }
+  if(me && me.status==='in_progress'){ e.preventDefault(); e.returnValue=''; }
 });
 
 (async function init(){
   try{ cfg=await api('/api/config'); }catch(e){}
-  document.querySelectorAll('.tot').forEach(x=>x.textContent=cfg.total);
-  ['rw','rw2','rw3','rw4'].forEach(i=>$(i).textContent=rupee()); $('secs').textContent=cfg.seconds;
+  document.querySelectorAll('.tot').forEach(x=>x.textContent=cfg.adsPerTask);
+  $('rwText').innerHTML='<b>'+cfg.adsPerTask+' ads = 1 task = ₹'+cfg.rewardPerTask+'</b><br>'+cfg.minTasks+' task (₹'+(cfg.minTasks*cfg.rewardPerTask)+') poore hone par withdraw. Har ad kam se kam '+cfg.seconds+' second dekhna zaroori hai.';
   await refresh(true);
   setInterval(()=>refresh(false),4000);
 })();
