@@ -8,7 +8,7 @@
 :root{--bg:#0b1220;--card:#162033;--line:#26344d;--ink:#eef2f8;--mute:#8fa0bb;--acc:#22c55e;--blue:#38bdf8;--warn:#f59e0b;--err:#ef4444}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
-.wrap{max-width:1100px;margin:0 auto;padding:18px 14px 60px}
+.wrap{max-width:1150px;margin:0 auto;padding:18px 14px 60px}
 h1{font-size:22px;margin:4px 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
 input{padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e1626;color:var(--ink);font-size:15px}
@@ -18,7 +18,7 @@ input{padding:12px;border-radius:10px;border:1px solid var(--line);background:#0
 .hidden{display:none!important}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
-.stat small{color:var(--mute);display:block;margin-bottom:4px}.stat b{font-size:22px}
+.stat small{color:var(--mute);display:block;margin-bottom:4px}.stat b{font-size:21px}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
 .tools input{flex:1;min-width:180px}
 .chip{padding:8px 12px;border-radius:99px;background:#0e1626;border:1px solid var(--line);color:var(--mute);cursor:pointer;font-size:13px}
@@ -30,13 +30,17 @@ th{color:var(--mute);font-weight:600;font-size:12px;text-transform:uppercase}
 .qr{width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer;background:#fff}
 .badge{padding:4px 9px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
 .b-registered{background:#26344d;color:#cbd5e1}.b-in_progress{background:#0c3347;color:var(--blue)}
-.b-incomplete{background:#3b1217;color:#fecaca}.b-completed{background:#3d2f08;color:#fcd34d}.b-paid{background:#12361f;color:var(--acc)}
+.b-incomplete{background:#3b1217;color:#fecaca}.b-ready{background:#3d2f08;color:#fcd34d}
 .mini{height:7px;width:90px;background:#0e1626;border-radius:9px;overflow:hidden;margin-top:5px}.mini i{display:block;height:100%;background:var(--blue)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:420px;width:100%;text-align:center}
 .modal img{max-width:100%;max-height:60vh;border-radius:10px;background:#fff}
 .err{color:#fecaca;font-size:14px;margin-top:8px}
 .mute{color:var(--mute);font-size:12px}
+.calc{margin-bottom:14px}
+.calc .row{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.calc .res{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px;width:100%}
+.pos{color:var(--acc)}.neg{color:#fca5a5}
 </style>
 </head>
 <body>
@@ -52,22 +56,32 @@ th{color:var(--mute);font-weight:600;font-size:12px;text-transform:uppercase}
 
   <div id="app" class="hidden">
     <div class="stats" id="stats"></div>
+
+    <div class="card calc">
+      <b>📊 Profit calculator (asli CPM se)</b>
+      <div class="mute" style="margin-top:4px">Adsterra → Statistics me jo CPM dikhe (₹ me, 1000 impressions par), wo yaha daalo.</div>
+      <div class="row">
+        <label>CPM (₹ / 1000 impressions): <input id="cpm" type="number" min="0" step="0.1" value="0" style="width:110px" oninput="calc()"></label>
+        <span class="mute" id="be"></span>
+      </div>
+      <div class="res" id="res"></div>
+    </div>
+
     <div class="tools">
       <input id="q" placeholder="Naam ya number se dhundo..." oninput="draw()">
       <span class="chip on" data-f="all">Sab</span>
-      <span class="chip" data-f="completed">Payment baaki</span>
+      <span class="chip" data-f="ready">Payment ready 💰</span>
       <span class="chip" data-f="in_progress">Chal raha</span>
       <span class="chip" data-f="incomplete">Incomplete</span>
-      <span class="chip" data-f="paid">Paid</span>
     </div>
     <div class="card tw">
       <table>
-        <thead><tr><th>User</th><th>Number</th><th>Ads dekhe</th><th>Status</th><th>QR scanner</th><th>Action</th></tr></thead>
+        <thead><tr><th>User</th><th>Number</th><th>Tasks</th><th>Wallet (baaki)</th><th>Abhi ka task</th><th>Status</th><th>QR</th><th>Action</th></tr></thead>
         <tbody id="rows"></tbody>
       </table>
       <div id="empty" class="mute" style="padding:18px;text-align:center">Abhi koi user nahi hai</div>
     </div>
-    <div class="mute" style="margin-top:8px">Har 4 second me apne aap refresh hota hai.</div>
+    <div class="mute" style="margin-top:8px">Har 4 second me apne aap refresh hota hai. Payment sirf tab hoti hai jab user ke kam se kam <span id="minT"></span> task poore hon.</div>
   </div>
 </div>
 
@@ -83,7 +97,7 @@ th{color:var(--mute);font-weight:600;font-size:12px;text-transform:uppercase}
   <div class="box">
     <div style="font-size:42px">💸</div>
     <b id="pName"></b>
-    <p class="mute" style="font-size:14px;line-height:1.5">Pehle apne UPI / bank app se <b id="pAmt"></b> is user ke QR par bhej do.<br>Bhejne ke BAAD hi neeche button dabao — user ko green tick dikhega.</p>
+    <p class="mute" style="font-size:14px;line-height:1.5">Pehle apne UPI / bank app se <b id="pAmt" style="font-size:18px"></b> is user ke QR par bhej do.<br>Bhejne ke BAAD hi neeche button dabao — user ko green tick dikhega.</p>
     <button class="btn g" id="pGo">✅ Payment kar diya — Green tick bhejo</button>
     <button class="btn s" onclick="closeP()">Cancel</button>
   </div>
@@ -91,10 +105,12 @@ th{color:var(--mute);font-weight:600;font-size:12px;text-transform:uppercase}
 
 <script>
 const $=(i)=>document.getElementById(i);
-let adm=sessionStorage.getItem('adm'), data={users:[],total:25,reward:5}, filter='all', tm=null, payId=null;
+let adm=sessionStorage.getItem('adm'), data={users:[],cfg:{adsPerTask:25,rewardPerTask:1,minTasks:5}}, filter='all', tm=null, payUser=null;
 const esc=(s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const LBL={registered:'Register hua',in_progress:'Chal raha',incomplete:'Incomplete ❌',completed:'Task poora ✅',paid:'Paid 🟢'};
 const fmt=(t)=>t?new Date(t).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+const LBL={registered:'Khali baitha',in_progress:'Ads dekh raha',incomplete:'Incomplete ❌',ready:'Payment ready 💰'};
+const dispStatus=(u)=>u.unpaidTasks>=data.cfg.minTasks?'ready':u.status;
+try{$('cpm').value=localStorage.getItem('cpm')||0}catch(e){}
 
 async function call(url,method='GET',body){
   const r=await fetch(url,{method,headers:{'Content-Type':'application/json','x-admin':adm||''},body:body?JSON.stringify(body):undefined});
@@ -115,39 +131,84 @@ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
   document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); filter=c.dataset.f; draw();
 });
 
-function draw(){
-  const us=data.users, R=data.reward;
-  const n=(s)=>us.filter(u=>u.status===s).length;
-  $('stats').innerHTML=[
-    ['Total users',us.length],['Payment baaki',n('completed')+'  ('+'₹'+n('completed')*R+')'],
-    ['Chal raha',n('in_progress')],['Incomplete',n('incomplete')],['Paid',n('paid')+'  (₹'+n('paid')*R+')']
+// ---- QR lazy load (list halki rahe) ----
+const qrCache={}, qrPending={};
+function loadQr(id){
+  if(qrCache[id]) return Promise.resolve(qrCache[id]);
+  if(!qrPending[id]) qrPending[id]=call('/api/admin/qr/'+id).then(j=>{qrCache[id]=j.qr;return j.qr}).finally(()=>delete qrPending[id]);
+  return qrPending[id];
+}
+function fillQrs(){
+  document.querySelectorAll('img.qr[data-id]').forEach(im=>{
+    const id=im.dataset.id;
+    if(qrCache[id]){im.src=qrCache[id];return}
+    loadQr(id).then(s=>{im.src=s}).catch(()=>{});
+  });
+}
+
+function calc(){
+  const C=data.cfg, us=data.users, cpm=parseFloat($('cpm').value)||0;
+  try{localStorage.setItem('cpm',cpm)}catch(e){}
+  const imp=us.reduce((s,u)=>s+u.impressions,0);
+  const earned=us.reduce((s,u)=>s+u.tasksDone,0)*C.rewardPerTask; // users ko kul dena banta hai (paid + baaki)
+  const rev=imp/1000*cpm, profit=rev-earned;
+  const be=C.rewardPerTask/C.adsPerTask*1000;
+  $('be').textContent='Break-even CPM: ₹'+be.toFixed(1)+' (isse zyada CPM = profit)';
+  $('res').innerHTML=[
+    ['Kul ad impressions',imp.toLocaleString('en-IN')],
+    ['Anumaanit kamai','₹'+rev.toFixed(2)],
+    ['Users ko dena (paid+baaki)','₹'+earned],
+    ['Anumaanit profit / loss','<span class="'+(profit>=0?'pos':'neg')+'">₹'+profit.toFixed(2)+'</span>']
   ].map(([a,b])=>`<div class="stat"><small>${a}</small><b>${b}</b></div>`).join('');
+}
+
+function draw(){
+  const us=data.users, C=data.cfg, R=C.rewardPerTask;
+  $('minT').textContent=C.minTasks;
+  const ready=us.filter(u=>u.unpaidTasks>=C.minTasks);
+  const owed=us.reduce((s,u)=>s+u.unpaidTasks*R,0);
+  const paid=us.reduce((s,u)=>s+u.paidTotal,0);
+  $('stats').innerHTML=[
+    ['Total users',us.length],
+    ['Payment ready',ready.length+'  (₹'+ready.reduce((s,u)=>s+u.unpaidTasks*R,0)+')'],
+    ['Ads dekh rahe',us.filter(u=>u.status==='in_progress').length],
+    ['Incomplete',us.filter(u=>u.status==='incomplete').length],
+    ['Paid ho chuka','₹'+paid],
+    ['Baaki dena (kul)','₹'+owed]
+  ].map(([a,b])=>`<div class="stat"><small>${a}</small><b>${b}</b></div>`).join('');
+  calc();
   const q=$('q').value.trim().toLowerCase();
-  let list=us.filter(u=>(filter==='all'||u.status===filter)&&(!q||u.name.toLowerCase().includes(q)||u.phone.includes(q)));
-  const rank={completed:0,in_progress:1,registered:2,incomplete:3,paid:4};
-  list.sort((a,b)=>rank[a.status]-rank[b.status]);
+  let list=us.filter(u=>(filter==='all'||dispStatus(u)===filter)&&(!q||u.name.toLowerCase().includes(q)||u.phone.includes(q)));
+  const rank={ready:0,in_progress:1,registered:2,incomplete:3};
+  list.sort((a,b)=>rank[dispStatus(a)]-rank[dispStatus(b)]);
   $('empty').classList.toggle('hidden',list.length>0);
-  $('rows').innerHTML=list.map(u=>`
+  $('rows').innerHTML=list.map(u=>{
+    const ds=dispStatus(u), isReady=ds==='ready';
+    return `
    <tr>
     <td><b>${esc(u.name)}</b><div class="mute">${fmt(u.createdAt)}</div></td>
     <td>${esc(u.phone)}</td>
-    <td><b>${u.adsWatched} / ${data.total}</b><div class="mini"><i style="width:${u.adsWatched/data.total*100}%"></i></div></td>
-    <td><span class="badge b-${u.status}">${LBL[u.status]}</span>${u.status==='paid'?`<div class="mute">${fmt(u.paidAt)}</div>`:u.status==='completed'?`<div class="mute">${fmt(u.completedAt)}</div>`:''}</td>
-    <td><img class="qr" src="${u.qr}" onclick="openQ('${u.id}')" alt="QR"></td>
+    <td><b>${u.tasksDone}</b> poore<div class="mute">${u.unpaidTasks} / ${C.minTasks} withdraw tak</div></td>
+    <td><b>₹${u.unpaidTasks*R}</b>${u.paidTotal?`<div class="mute">Paid: ₹${u.paidTotal} (${fmt(u.paidAt)})</div>`:''}</td>
+    <td><b>${u.adsWatched} / ${C.adsPerTask}</b><div class="mini"><i style="width:${u.adsWatched/C.adsPerTask*100}%"></i></div></td>
+    <td><span class="badge b-${ds}">${LBL[ds]}</span></td>
+    <td><img class="qr" data-id="${u.id}" onclick="openQ('${u.id}')" alt="QR"></td>
     <td>
-      ${u.status==='completed'?`<button class="btn g" onclick="openP('${u.id}')">💸 ₹${R} bhejo + ✅</button>`:u.status==='paid'?'<span class="mute">Ho gaya</span>':'<button class="btn" disabled>Task baaki</button>'}
+      ${isReady?`<button class="btn g" onclick="openP('${u.id}')">💸 ₹${u.unpaidTasks*R} bhejo + ✅</button>`:'<button class="btn" disabled>Withdraw baaki</button>'}
       <button class="btn r" title="Delete" onclick="del('${u.id}')">🗑</button>
     </td>
-   </tr>`).join('');
+   </tr>`}).join('');
+  fillQrs();
 }
 const find=(id)=>data.users.find(u=>u.id===id);
-function openQ(id){const u=find(id); if(!u)return; $('qName').textContent=u.name; $('qPhone').textContent=u.phone; $('qImg').src=u.qr; $('qDl').href=u.qr; $('qDl').download='qr-'+u.phone+'.jpg'; $('qrModal').classList.remove('hidden')}
+async function openQ(id){const u=find(id); if(!u)return; $('qName').textContent=u.name; $('qPhone').textContent=u.phone; const s=await loadQr(id); $('qImg').src=s; $('qDl').href=s; $('qDl').download='qr-'+u.phone+'.jpg'; $('qrModal').classList.remove('hidden')}
 function closeM(){$('qrModal').classList.add('hidden')}
-function openP(id){const u=find(id); if(!u)return; payId=id; $('pName').textContent=u.name+' ('+u.phone+')'; $('pAmt').textContent='₹'+data.reward; $('payModal').classList.remove('hidden')}
-function closeP(){$('payModal').classList.add('hidden');payId=null}
+function openP(id){const u=find(id); if(!u)return; payUser={id,tasks:u.unpaidTasks}; $('pName').textContent=u.name+' ('+u.phone+')'; $('pAmt').textContent='₹'+(u.unpaidTasks*data.cfg.rewardPerTask); $('payModal').classList.remove('hidden')}
+function closeP(){$('payModal').classList.add('hidden');payUser=null}
 $('pGo').onclick=async()=>{
-  if(!payId) return; $('pGo').disabled=true;
-  try{await call('/api/admin/pay/'+payId,'POST'); closeP(); await load();}catch(e){alert(e.message)}
+  if(!payUser) return; $('pGo').disabled=true;
+  try{await call('/api/admin/pay/'+payUser.id,'POST',{tasks:payUser.tasks}); closeP(); await load();}
+  catch(e){alert(e.message); closeP(); await load();}
   $('pGo').disabled=false;
 };
 async function del(id){ if(!confirm('Is user ko delete karna hai?'))return; try{await call('/api/admin/users/'+id,'DELETE'); load();}catch(e){alert(e.message)} }
