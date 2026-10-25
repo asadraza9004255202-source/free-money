@@ -18,7 +18,15 @@ const adminTokens = new Set();
 
 const app = express();
 app.use(express.json({ limit: '3mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+// Pages: public/ folder me ho ya seedhe bahar (server.js ke saath), dono chalega.
+// Poora folder serve nahi karte, taaki data.json aur server.js bahar na dikhein.
+const pickPage = (f) => [path.join(__dirname, 'public', f), path.join(__dirname, f)].find((p) => fs.existsSync(p));
+const page = (f) => (req, res) => {
+  const p = pickPage(f);
+  p ? res.sendFile(p) : res.status(404).send(f + ' nahi mili');
+};
+app.get(['/', '/index.html'], page('index.html'));
+app.get('/admin.html', page('admin.html'));
 
 // ---------- helpers ----------
 function effStatus(u) {
