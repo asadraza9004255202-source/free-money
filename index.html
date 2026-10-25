@@ -108,7 +108,7 @@ input:focus{outline:2px solid var(--blue);border-color:transparent}
       <div class="timer"><div class="n" id="tn">10</div><span>second baaki... (agla ad apne aap aayega)</span></div>
       <div class="paused hidden" id="pz">⏸ Tab par wapas aao, timer ruka hua hai</div>
     </div>
-    <div class="note">⚠ Beech me page band karne ya chhodne par ye task adhura (incomplete) ho jayega aur is task ko dobara 1 se shuru karna padega. Pehle poore kiye hue tasks surakshit rehte hain.</div>
+    <div class="note">ℹ Page refresh karne se kuch nahi hota, aap wahi se aage badhoge. Lekin page ko lagbhag 1.5 minute se zyada chhodoge to ye task adhura (incomplete) ho jayega. Pehle poore kiye hue tasks hamesha surakshit rehte hain.</div>
   </div>
 
   <!-- TASK DONE -->
@@ -327,15 +327,8 @@ async function refresh(force){
   }
 }
 
-// page chhodne par incomplete mark
-window.addEventListener('pagehide',()=>{
-  if(token && me && me.status==='in_progress'){
-    navigator.sendBeacon('/api/leave',new Blob([JSON.stringify({token})],{type:'application/json'}));
-  }
-});
-window.addEventListener('beforeunload',e=>{
-  if(me && me.status==='in_progress'){ e.preventDefault(); e.returnValue=''; }
-});
+// Refresh karne par user login hi rehta hai (token browser me saved hai) aur task wahi se aage chalta hai.
+// Page 90 second se zyada band rahe to server khud task ko incomplete kar deta hai.
 
 (async function init(){
   try{ cfg=await api('/api/config'); }catch(e){}
