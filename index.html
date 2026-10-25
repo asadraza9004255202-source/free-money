@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AdReward - Ads dekho, paise kamao</title>
+<style>
+:root{--bg:#0b1220;--card:#162033;--line:#26344d;--ink:#eef2f8;--mute:#8fa0bb;--acc:#22c55e;--blue:#38bdf8;--warn:#f59e0b;--err:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:18px 16px 60px}
+h1{font-size:22px;margin:6px 0 4px}
+.sub{color:var(--mute);font-size:14px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+label{display:block;font-size:13px;color:var(--mute);margin:12px 0 6px}
+input[type=text],input[type=tel]{width:100%;padding:13px;border-radius:10px;border:1px solid var(--line);background:#0e1626;color:var(--ink);font-size:16px}
+input:focus{outline:2px solid var(--blue);border-color:transparent}
+.file{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px dashed var(--line);border-radius:10px;background:#0e1626}
+.file img{width:64px;height:64px;object-fit:cover;border-radius:8px;display:none}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;color:#04210f;background:var(--acc);cursor:pointer;margin-top:16px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.blue{background:var(--blue);color:#04202e}
+.err{background:#3b1217;border:1px solid #7f1d1d;color:#fecaca;padding:12px;border-radius:10px;font-size:14px;margin-top:12px;display:none}
+.reward{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#0f3d26,#0b2a40);border:1px solid #1d5b3a;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:14px}
+.reward b{font-size:20px;color:var(--acc)}
+.hidden{display:none!important}
+.bar{height:12px;background:#0e1626;border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--acc));transition:width .4s}
+.prog{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+.tile{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;background:#0e1626;border:1px solid var(--line);color:var(--mute)}
+.tile.done{background:#12361f;border-color:#1d5b3a;color:var(--acc)}
+.tile.cur{border-color:var(--blue);color:var(--blue);box-shadow:0 0 0 2px rgba(56,189,248,.25)}
+/* ad boxes */
+.adbox{margin-top:12px;border-radius:12px;border:1px solid var(--line);background:#0e1626;padding:10px}
+.adtag{font-size:11px;color:var(--mute);letter-spacing:.08em;margin-bottom:6px}
+.slot{margin:0 auto;border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;font-weight:700;overflow:hidden;max-width:100%}
+.t0{width:320px;height:100px;background:linear-gradient(120deg,#7c3aed,#db2777)}
+.t1{width:300px;height:250px;background:linear-gradient(160deg,#0ea5e9,#6366f1)}
+.t2{width:100%;height:90px;background:linear-gradient(90deg,#f59e0b,#ef4444)}
+.t3{width:160px;height:300px;background:linear-gradient(180deg,#10b981,#0f766e)}
+.t4{width:336px;height:280px;max-width:100%;background:linear-gradient(135deg,#f43f5e,#fb923c)}
+.timer{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;font-weight:700}
+.timer .n{width:42px;height:42px;border-radius:50%;border:3px solid var(--blue);display:flex;align-items:center;justify-content:center}
+.paused{color:var(--warn);font-size:13px;text-align:center;margin-top:6px}
+.big{text-align:center;padding:26px 10px}
+.big .ico{font-size:54px}
+.note{font-size:12px;color:var(--mute);margin-top:10px;text-align:center}
+/* success overlay */
+#success{position:fixed;inset:0;background:radial-gradient(circle at 50% 35%,#0f3d26,#06130d);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+#success svg{width:170px;height:170px}
+#success .c{stroke:var(--acc);stroke-width:5;fill:none;stroke-dasharray:302;stroke-dashoffset:302;animation:dr .8s ease forwards}
+#success .t{stroke:var(--acc);stroke-width:7;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:70;stroke-dashoffset:70;animation:dr .5s .7s ease forwards}
+#success .pop{transform-origin:center;animation:pop .6s ease}
+#success h2{font-size:26px;margin:18px 0 6px;color:#eafff2;opacity:0;animation:fade .6s 1.2s forwards}
+#success p{color:#a7e8c3;margin:0;opacity:0;animation:fade .6s 1.5s forwards}
+.conf{position:absolute;top:-10px;width:10px;height:16px;opacity:.9;animation:fall linear forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💸 AdReward</h1>
+  <div class="sub">25 ads dekho aur <b id="rw">₹5</b> kamao</div>
+
+  <div class="reward"><span>🎁</span><div><b id="rw2">₹5</b> — 25 ads poore dekhne par<br><small style="color:var(--mute)">Har ad kam se kam <span id="secs">10</span> second dekhna zaroori hai</small></div></div>
+
+  <!-- REGISTER -->
+  <div id="vReg" class="card hidden">
+    <b>Register karo</b>
+    <label>Poora naam (Full name)</label>
+    <input id="fName" type="text" placeholder="Jaise: Rahul Kumar" autocomplete="name">
+    <label>Mobile number</label>
+    <input id="fPhone" type="tel" inputmode="numeric" maxlength="10" placeholder="10 digit number">
+    <label>Bank / UPI QR scanner (jaha paise lene hain)</label>
+    <label class="file" style="margin:0;cursor:pointer">
+      <img id="qrPrev" alt="">
+      <span id="qrTxt">📷 QR scanner ki photo chuno</span>
+      <input id="fQr" type="file" accept="image/*" hidden>
+    </label>
+    <div class="err" id="regErr"></div>
+    <button class="btn" id="btnReg">Register karke shuru karo</button>
+  </div>
+
+  <!-- TASK -->
+  <div id="vTask" class="card hidden">
+    <div class="prog"><b>Aapka task</b><span><b id="cnt">0</b> / <span class="tot">25</span> ads</span></div>
+    <div class="bar"><i id="barI"></i></div>
+    <div class="grid" id="grid"></div>
+    <button class="btn blue" id="btnAd">▶ Ad dekho</button>
+    <div id="adArea" class="hidden">
+      <div class="adbox">
+        <div class="adtag">ADVERTISEMENT</div>
+        <div id="adSlot"></div>
+      </div>
+      <div class="timer"><div class="n" id="tn">10</div><span>second baaki...</span></div>
+      <div class="paused hidden" id="pz">⏸ Tab par wapas aao, timer ruka hua hai</div>
+    </div>
+    <div class="note">⚠ Beech me page band karne ya chhodne par task adhura (incomplete) ho jayega aur dobara 1 se shuru karna padega.</div>
+  </div>
+
+  <!-- INCOMPLETE -->
+  <div id="vInc" class="card hidden">
+    <div class="big"><div class="ico">❌</div>
+    <h2 style="color:#fecaca">Task incomplete!</h2>
+    <p style="color:var(--mute)">Aap beech me hi chhod kar chale gaye the. Paise tabhi milenge jab <b class="tot">25</b> ads poore dekhoge.</p></div>
+    <button class="btn" id="btnRestart">Dobara shuru karo</button>
+  </div>
+
+  <!-- WAITING PAYMENT -->
+  <div id="vWait" class="card hidden">
+    <div class="big"><div class="ico">⏳</div>
+    <h2>Task poora ho gaya! 🎉</h2>
+    <p style="color:var(--mute)">Admin aapka task check karke <b id="rw3">₹5</b> aapke QR par bhej raha hai.<br>Ye page khula rakho — payment hote hi yaha green tick aa jayega.</p></div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="success" class="hidden">
+  <svg viewBox="0 0 120 120" class="pop"><circle class="c" cx="60" cy="60" r="48"/><path class="t" d="M36 62 L54 80 L86 44"/></svg>
+  <h2>Payment ho gaya! ✅</h2>
+  <p id="sName"></p>
+  <p style="margin-top:6px">Aapke QR par <b id="rw4">₹5</b> bhej diye gaye hain. Shukriya! 🙏</p>
+</div>
+
+<script>
+const $=(id)=>document.getElementById(id);
+let cfg={total:25,seconds:10,reward:5}, token=localStorage.getItem('ar_token'), me=null, shown=null, qrData=null, timer=null, remaining=0, running=false;
+
+async function api(url,body){
+  const r=await fetch(url,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok){const e=new Error(j.error||'Error');e.data=j;e.status=r.status;throw e;}
+  return j;
+}
+function show(v){
+  ['vReg','vTask','vInc','vWait'].forEach(x=>$(x).classList.toggle('hidden',x!==v));
+  shown=v;
+}
+function rupee(){return '₹'+cfg.reward}
+
+// ----- QR upload (chhota karke) -----
+$('fQr').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const img=new Image(); const url=URL.createObjectURL(f);
+  img.onload=()=>{
+    const m=700, s=Math.min(1,m/Math.max(img.width,img.height));
+    const c=document.createElement('canvas'); c.width=img.width*s; c.height=img.height*s;
+    const g=c.getContext('2d'); g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); g.drawImage(img,0,0,c.width,c.height);
+    qrData=c.toDataURL('image/jpeg',0.85);
+    $('qrPrev').src=qrData; $('qrPrev').style.display='block'; $('qrTxt').textContent='✅ QR photo select ho gayi (badalne ke liye dabao)';
+    URL.revokeObjectURL(url);
+  };
+  img.src=url;
+});
+
+$('btnReg').onclick=async()=>{
+  const b=$('btnReg'), er=$('regErr'); er.style.display='none';
+  const name=$('fName').value.trim(), phone=$('fPhone').value.trim();
+  const fail=(m)=>{er.textContent=m;er.style.display='block'};
+  if(name.length<3) return fail('Poora naam likho');
+  if(!/^[6-9]\d{9}$/.test(phone)) return fail('Sahi 10 digit mobile number daalo');
+  if(!qrData) return fail('Bank / UPI QR scanner ki photo upload karo');
+  b.disabled=true; b.textContent='Ruko...';
+  try{
+    const r=await api('/api/register',{name,phone,qr:qrData});
+    token=r.token; localStorage.setItem('ar_token',token);
+    await refresh(true);
+  }catch(e){fail(e.message)}
+  b.disabled=false; b.textContent='Register karke shuru karo';
+};
+
+// ----- TASK -----
+function paintTask(){
+  const w=me.adsWatched; $('cnt').textContent=w; $('barI').style.width=(w/cfg.total*100)+'%';
+  const g=$('grid'); g.innerHTML='';
+  for(let i=0;i<cfg.total;i++){
+    const d=document.createElement('div'); d.className='tile'+(i<w?' done':(i===w?' cur':''));
+    d.textContent=i<w?'✓':i+1; g.appendChild(d);
+  }
+  $('btnAd').textContent='▶ Ad #'+(w+1)+' dekho';
+}
+/* ============================================================
+   AD SLOTS — yaha apne asli ad network ka code lagao
+   (Google AdSense / Adsterra / Monetag etc.). Abhi 5 alag-alag
+   size ke demo boxes hain jo ads ke jagah dikhte hain.
+   ============================================================ */
+function adHtml(i){
+  const t=i%5, sizes=['320x100','300x250','Wide banner','160x300','336x280'];
+  return `<div class="slot t${t}"><div>Ad Box #${i+1}<br><small>${sizes[t]} — yaha apna ad code lagao</small></div></div>`;
+}
+$('btnAd').onclick=async()=>{
+  if(running) return;
+  try{ await api('/api/ad/start',{token,index:me.adsWatched}); }
+  catch(e){ await refresh(true); return; }
+  running=true; $('btnAd').classList.add('hidden');
+  $('adSlot').innerHTML=adHtml(me.adsWatched); $('adArea').classList.remove('hidden');
+  remaining=cfg.seconds; $('tn').textContent=remaining;
+  timer=setInterval(async()=>{
+    const hid=document.hidden; $('pz').classList.toggle('hidden',!hid);
+    if(hid) return;
+    remaining--; $('tn').textContent=Math.max(remaining,0);
+    if(remaining<=0){
+      clearInterval(timer); timer=null;
+      try{
+        const r=await api('/api/ad/complete',{token,index:me.adsWatched});
+        me=r; running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden');
+        if(me.status==='completed'){ show('vWait'); } else paintTask();
+      }catch(e){ running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden'); await refresh(true); }
+    }
+  },1000);
+};
+
+$('btnRestart').onclick=async()=>{
+  try{ me=await api('/api/restart',{token}); render(true);}catch(e){await refresh(true)}
+};
+
+// ----- render by status -----
+function render(force){
+  if(!me) return;
+  if(me.status==='paid'){ showSuccess(); return; }
+  if(me.status==='completed'){ if(shown!=='vWait'||force) show('vWait'); return; }
+  if(me.status==='incomplete'){
+    if(timer){clearInterval(timer);timer=null;} running=false; $('adArea').classList.add('hidden'); $('btnAd').classList.remove('hidden');
+    if(shown!=='vInc'||force) show('vInc'); return;
+  }
+  // registered / in_progress
+  if(shown!=='vTask'||force){ show('vTask'); paintTask(); }
+}
+function showSuccess(){
+  if(!$('success').classList.contains('hidden')) return;
+  $('sName').textContent=me.name; $('success').classList.remove('hidden');
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div'); c.className='conf';
+    c.style.left=Math.random()*100+'vw'; c.style.background=['#22c55e','#38bdf8','#f59e0b','#f43f5e','#a78bfa'][i%5];
+    c.style.animationDuration=(2+Math.random()*2.5)+'s'; c.style.animationDelay=(1+Math.random()*1.5)+'s';
+    $('success').appendChild(c);
+  }
+  localStorage.removeItem('ar_token');
+}
+async function refresh(force){
+  if(!token){ show('vReg'); return; }
+  try{
+    const r=await api('/api/me?token='+token);
+    const changed=!me||r.status!==me.status;
+    if(running && r.status==='in_progress'){ return; } // timer chal raha hai, UI mat chhedo
+    me=r; render(force||changed);
+  }catch(e){
+    if(e.status===404){ localStorage.removeItem('ar_token'); token=null; show('vReg'); }
+  }
+}
+
+// page chhodne par incomplete mark
+window.addEventListener('pagehide',()=>{
+  if(token && me && me.status==='in_progress' && me.adsWatched<cfg.total){
+    navigator.sendBeacon('/api/leave',new Blob([JSON.stringify({token})],{type:'application/json'}));
+  }
+});
+window.addEventListener('beforeunload',e=>{
+  if(me && me.status==='in_progress' && me.adsWatched<cfg.total){ e.preventDefault(); e.returnValue=''; }
+});
+
+(async function init(){
+  try{ cfg=await api('/api/config'); }catch(e){}
+  document.querySelectorAll('.tot').forEach(x=>x.textContent=cfg.total);
+  ['rw','rw2','rw3','rw4'].forEach(i=>$(i).textContent=rupee()); $('secs').textContent=cfg.seconds;
+  await refresh(true);
+  setInterval(()=>refresh(false),4000);
+})();
+</script>
+</body>
+</html>

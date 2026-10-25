@@ -1,0 +1,8 @@
+{
+  "name": "adreward",
+  "version": "1.0.0",
+  "description": "Ads dekho, reward pao - platform with admin panel",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.19.2" }
+}

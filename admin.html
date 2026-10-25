@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AdReward Admin</title>
+<style>
+:root{--bg:#0b1220;--card:#162033;--line:#26344d;--ink:#eef2f8;--mute:#8fa0bb;--acc:#22c55e;--blue:#38bdf8;--warn:#f59e0b;--err:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+.wrap{max-width:1100px;margin:0 auto;padding:18px 14px 60px}
+h1{font-size:22px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+input{padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e1626;color:var(--ink);font-size:15px}
+.btn{padding:10px 14px;border:0;border-radius:10px;font-weight:700;cursor:pointer;background:var(--blue);color:#04202e;font-size:14px}
+.btn.g{background:var(--acc);color:#04210f}.btn.r{background:#3b1217;color:#fecaca}.btn.s{background:#26344d;color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{color:var(--mute);display:block;margin-bottom:4px}.stat b{font-size:22px}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.tools input{flex:1;min-width:180px}
+.chip{padding:8px 12px;border-radius:99px;background:#0e1626;border:1px solid var(--line);color:var(--mute);cursor:pointer;font-size:13px}
+.chip.on{background:var(--blue);color:#04202e;border-color:var(--blue);font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{color:var(--mute);font-weight:600;font-size:12px;text-transform:uppercase}
+.tw{overflow-x:auto}
+.qr{width:52px;height:52px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:pointer;background:#fff}
+.badge{padding:4px 9px;border-radius:99px;font-size:12px;font-weight:700;white-space:nowrap}
+.b-registered{background:#26344d;color:#cbd5e1}.b-in_progress{background:#0c3347;color:var(--blue)}
+.b-incomplete{background:#3b1217;color:#fecaca}.b-completed{background:#3d2f08;color:#fcd34d}.b-paid{background:#12361f;color:var(--acc)}
+.mini{height:7px;width:90px;background:#0e1626;border-radius:9px;overflow:hidden;margin-top:5px}.mini i{display:block;height:100%;background:var(--blue)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:420px;width:100%;text-align:center}
+.modal img{max-width:100%;max-height:60vh;border-radius:10px;background:#fff}
+.err{color:#fecaca;font-size:14px;margin-top:8px}
+.mute{color:var(--mute);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛠 AdReward — Admin Panel</h1>
+
+  <div id="login" class="card" style="max-width:360px">
+    <b>Admin login</b><br><br>
+    <input id="pw" type="password" placeholder="Password" style="width:100%" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="err" id="lerr"></div><br>
+    <button class="btn" style="width:100%" onclick="doLogin()">Login</button>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="stats" id="stats"></div>
+    <div class="tools">
+      <input id="q" placeholder="Naam ya number se dhundo..." oninput="draw()">
+      <span class="chip on" data-f="all">Sab</span>
+      <span class="chip" data-f="completed">Payment baaki</span>
+      <span class="chip" data-f="in_progress">Chal raha</span>
+      <span class="chip" data-f="incomplete">Incomplete</span>
+      <span class="chip" data-f="paid">Paid</span>
+    </div>
+    <div class="card tw">
+      <table>
+        <thead><tr><th>User</th><th>Number</th><th>Ads dekhe</th><th>Status</th><th>QR scanner</th><th>Action</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div id="empty" class="mute" style="padding:18px;text-align:center">Abhi koi user nahi hai</div>
+    </div>
+    <div class="mute" style="margin-top:8px">Har 4 second me apne aap refresh hota hai.</div>
+  </div>
+</div>
+
+<div id="qrModal" class="modal hidden" onclick="if(event.target===this)closeM()">
+  <div class="box"><b id="qName"></b><br><span class="mute" id="qPhone"></span><br><br>
+    <img id="qImg" alt="QR"><br><br>
+    <a id="qDl" class="btn s" style="text-decoration:none;display:inline-block">⬇ Download</a>
+    <button class="btn s" onclick="closeM()">Band karo</button>
+  </div>
+</div>
+
+<div id="payModal" class="modal hidden" onclick="if(event.target===this)closeP()">
+  <div class="box">
+    <div style="font-size:42px">💸</div>
+    <b id="pName"></b>
+    <p class="mute" style="font-size:14px;line-height:1.5">Pehle apne UPI / bank app se <b id="pAmt"></b> is user ke QR par bhej do.<br>Bhejne ke BAAD hi neeche button dabao — user ko green tick dikhega.</p>
+    <button class="btn g" id="pGo">✅ Payment kar diya — Green tick bhejo</button>
+    <button class="btn s" onclick="closeP()">Cancel</button>
+  </div>
+</div>
+
+<script>
+const $=(i)=>document.getElementById(i);
+let adm=sessionStorage.getItem('adm'), data={users:[],total:25,reward:5}, filter='all', tm=null, payId=null;
+const esc=(s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LBL={registered:'Register hua',in_progress:'Chal raha',incomplete:'Incomplete ❌',completed:'Task poora ✅',paid:'Paid 🟢'};
+const fmt=(t)=>t?new Date(t).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+
+async function call(url,method='GET',body){
+  const r=await fetch(url,{method,headers:{'Content-Type':'application/json','x-admin':adm||''},body:body?JSON.stringify(body):undefined});
+  const j=await r.json().catch(()=>({}));
+  if(r.status===401&&adm){logout();}
+  if(!r.ok) throw new Error(j.error||'Error'); return j;
+}
+async function doLogin(){
+  $('lerr').textContent='';
+  try{const j=await call('/api/admin/login','POST',{password:$('pw').value}); adm=j.token; sessionStorage.setItem('adm',adm); start();}
+  catch(e){$('lerr').textContent=e.message}
+}
+function logout(){adm=null;sessionStorage.removeItem('adm');clearInterval(tm);$('app').classList.add('hidden');$('login').classList.remove('hidden')}
+function start(){ $('login').classList.add('hidden'); $('app').classList.remove('hidden'); load(); clearInterval(tm); tm=setInterval(load,4000); }
+async function load(){ try{data=await call('/api/admin/users'); draw();}catch(e){} }
+
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); filter=c.dataset.f; draw();
+});
+
+function draw(){
+  const us=data.users, R=data.reward;
+  const n=(s)=>us.filter(u=>u.status===s).length;
+  $('stats').innerHTML=[
+    ['Total users',us.length],['Payment baaki',n('completed')+'  ('+'₹'+n('completed')*R+')'],
+    ['Chal raha',n('in_progress')],['Incomplete',n('incomplete')],['Paid',n('paid')+'  (₹'+n('paid')*R+')']
+  ].map(([a,b])=>`<div class="stat"><small>${a}</small><b>${b}</b></div>`).join('');
+  const q=$('q').value.trim().toLowerCase();
+  let list=us.filter(u=>(filter==='all'||u.status===filter)&&(!q||u.name.toLowerCase().includes(q)||u.phone.includes(q)));
+  const rank={completed:0,in_progress:1,registered:2,incomplete:3,paid:4};
+  list.sort((a,b)=>rank[a.status]-rank[b.status]);
+  $('empty').classList.toggle('hidden',list.length>0);
+  $('rows').innerHTML=list.map(u=>`
+   <tr>
+    <td><b>${esc(u.name)}</b><div class="mute">${fmt(u.createdAt)}</div></td>
+    <td>${esc(u.phone)}</td>
+    <td><b>${u.adsWatched} / ${data.total}</b><div class="mini"><i style="width:${u.adsWatched/data.total*100}%"></i></div></td>
+    <td><span class="badge b-${u.status}">${LBL[u.status]}</span>${u.status==='paid'?`<div class="mute">${fmt(u.paidAt)}</div>`:u.status==='completed'?`<div class="mute">${fmt(u.completedAt)}</div>`:''}</td>
+    <td><img class="qr" src="${u.qr}" onclick="openQ('${u.id}')" alt="QR"></td>
+    <td>
+      ${u.status==='completed'?`<button class="btn g" onclick="openP('${u.id}')">💸 ₹${R} bhejo + ✅</button>`:u.status==='paid'?'<span class="mute">Ho gaya</span>':'<button class="btn" disabled>Task baaki</button>'}
+      <button class="btn r" title="Delete" onclick="del('${u.id}')">🗑</button>
+    </td>
+   </tr>`).join('');
+}
+const find=(id)=>data.users.find(u=>u.id===id);
+function openQ(id){const u=find(id); if(!u)return; $('qName').textContent=u.name; $('qPhone').textContent=u.phone; $('qImg').src=u.qr; $('qDl').href=u.qr; $('qDl').download='qr-'+u.phone+'.jpg'; $('qrModal').classList.remove('hidden')}
+function closeM(){$('qrModal').classList.add('hidden')}
+function openP(id){const u=find(id); if(!u)return; payId=id; $('pName').textContent=u.name+' ('+u.phone+')'; $('pAmt').textContent='₹'+data.reward; $('payModal').classList.remove('hidden')}
+function closeP(){$('payModal').classList.add('hidden');payId=null}
+$('pGo').onclick=async()=>{
+  if(!payId) return; $('pGo').disabled=true;
+  try{await call('/api/admin/pay/'+payId,'POST'); closeP(); await load();}catch(e){alert(e.message)}
+  $('pGo').disabled=false;
+};
+async function del(id){ if(!confirm('Is user ko delete karna hai?'))return; try{await call('/api/admin/users/'+id,'DELETE'); load();}catch(e){alert(e.message)} }
+
+if(adm) start();
+</script>
+</body>
+</html>
