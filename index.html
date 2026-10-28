@@ -8,7 +8,6 @@
 :root{--bg:#0b1220;--card:#162033;--line:#26344d;--ink:#eef2f8;--mute:#8fa0bb;--acc:#22c55e;--blue:#38bdf8;--warn:#f59e0b;--err:#ef4444}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
-/* animated background */
 .bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
 .bg i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.28;animation:float 14s ease-in-out infinite}
 .bg i:nth-child(1){width:340px;height:340px;background:#0ea5e9;top:-80px;left:-80px}
@@ -32,7 +31,6 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 .reward b{color:var(--acc)}
 @keyframes wiggle{0%,100%{transform:rotate(0)}10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(14deg)}50%{transform:rotate(0)}}
 
-/* ---------- register form ---------- */
 .formhead{display:flex;align-items:center;gap:10px;margin-bottom:4px}
 .formhead .lock{font-size:22px}
 .steps{display:flex;gap:6px;margin:10px 0 4px}
@@ -61,7 +59,6 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 .field.ok .hint{color:var(--acc)}
 .shake{animation:shake .45s}
 @keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
-/* QR dropzone */
 .drop{position:relative;display:flex;align-items:center;gap:14px;padding:14px;border:2px dashed var(--line);border-radius:14px;background:#0e1626;cursor:pointer;transition:border-color .2s,background .2s}
 .drop:hover,.drop.over{border-color:var(--blue);background:#0c1a2c}
 .field.ok .drop{border-style:solid;border-color:var(--acc)}
@@ -86,7 +83,6 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 @keyframes rot{to{transform:rotate(360deg)}}
 .secure{display:flex;gap:8px;align-items:center;justify-content:center;font-size:12px;color:var(--mute);margin-top:12px}
 
-/* ---------- wallet / task ---------- */
 .wallet{display:none;background:#0e1626;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:16px;animation:rise .5s ease both}
 .wallet .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .wallet .amt{font-size:26px;font-weight:800;color:var(--acc)}
@@ -108,7 +104,6 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 .big .ico{font-size:54px}
 .note{font-size:12px;color:var(--mute);margin-top:10px;text-align:center}
 
-/* overlays */
 .ov{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 35%,#0f3d26,#06130d)}
 .ov svg{width:170px;height:170px}
 .ov .c{stroke:var(--acc);stroke-width:5;fill:none;stroke-dasharray:302;stroke-dashoffset:302;animation:dr .8s ease forwards}
@@ -122,7 +117,6 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 @keyframes fade{to{opacity:1}}
 @keyframes popin{0%{transform:scale(.6)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
 @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
-/* claim animation */
 .claim{position:relative;overflow:hidden;background:linear-gradient(90deg,#f59e0b,#fbbf24);color:#3b2400;font-size:19px;animation:glow 1.4s ease-in-out infinite}
 .claim::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-20deg);animation:shine 2s infinite}
 .claim:disabled{animation:none;opacity:.7}
@@ -133,7 +127,6 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 @keyframes bump{40%{transform:scale(1.3);color:#fde68a}}
 .bounce{display:inline-block;animation:bounce .8s ease infinite}
 @keyframes bounce{50%{transform:translateY(-10px)}}
-/* admin login (same page) */
 .foot{max-width:640px;margin:0 auto;padding:0 16px 40px;text-align:center}
 .foot a{color:var(--mute);font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
 .foot a:hover{color:var(--blue)}
@@ -292,7 +285,6 @@ function show(v){
   shown=v;
 }
 
-/* =================== REGISTER FORM =================== */
 const NAME_RE=/^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ .'-]{2,59}$/;
 const PHONE_RE=/^[6-9]\d{9}$/;
 const UPI_RE=/^[a-z0-9._-]{2,100}@[a-z]{2,40}$/;
@@ -328,14 +320,13 @@ function checkPhone(touched){
   progress();
 }
 $('fName').addEventListener('input',()=>checkName(true));
-$('fName').addEventListener('blur',()=>{ // Title Case
+$('fName').addEventListener('blur',()=>{ 
   $('fName').value=$('fName').value.trim().toLowerCase().replace(/(^|[ .'-])([a-zà-ɏ])/g,(m,a,b)=>a+b.toUpperCase()); checkName(true);
 });
 $('fPhone').addEventListener('input',()=>checkPhone(true));
 $('fPhone').addEventListener('paste',e=>{e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'').replace(/^(91|0)(?=\d{10}$)/,'');$('fPhone').value=t.slice(0,10);checkPhone(true)});
 $('fAgree').addEventListener('change',()=>{state.agree=$('fAgree').checked;$('agreeRow').classList.remove('bad');progress()});
 
-/* ---- QR reading ---- */
 function loadImg(file){return new Promise((res,rej)=>{const i=new Image(),u=URL.createObjectURL(file);i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('bad'))};i.src=u;});}
 async function scanImage(img){
   const hasJs=(typeof jsQR==='function'), hasBd=('BarcodeDetector' in window);
@@ -350,7 +341,7 @@ async function scanImage(img){
       if(r&&r.data) return r.data;
     }
   }
-  if(hasBd){ // browser ka apna QR reader (backup)
+  if(hasBd){
     try{ const r=await new BarcodeDetector({formats:['qr_code']}).detect(img); if(r&&r[0]&&r[0].rawValue) return r[0].rawValue; }catch(e){}
   }
   return null;
@@ -390,7 +381,7 @@ async function handleQr(file){
     if(!upi) return qrFail('This is not a UPI payment QR. Use the QR from PhonePe, Google Pay, Paytm or BHIM.');
     qrData=resizeToJpeg(img); upiId=upi; state.qr=true;
     $('qrTitle').textContent='QR verified ✓'; $('qrSub').textContent='Tap to change';
-    $('upiChip').innerHTML='✅ UPI ID detected: <b>'+upi.replace(/[<>&"]/g,'')+'</b>'; $('upiChip').classList.add('show');
+    $('upiChip').innerHTML='✅ UPI ID detected: <b>'+upi.replace(/[<>&"]/g, '')+'</b>'; $('upiChip').classList.add('show');
     setField('fgQr','hQr',true,'Payments will be sent to this UPI ID.',true); progress();
   }catch(e){
     qrFail(e.message==='lib'?'Scanner could not load. Check your internet and refresh the page.':'Could not open this image. Try a different one.');
@@ -401,23 +392,38 @@ $('fQr').addEventListener('change',e=>handleQr(e.target.files[0]));
 ['dragleave','drop'].forEach(ev=>$('drop').addEventListener(ev,e=>{e.preventDefault();$('drop').classList.remove('over')}));
 $('drop').addEventListener('drop',e=>{const f=e.dataTransfer&&e.dataTransfer.files[0]; if(f) handleQr(f)});
 
-/* ---- submit ---- */
 function shake(el){el.classList.remove('shake');void el.offsetWidth;el.classList.add('shake')}
 function formError(m){const e=$('regErr');e.textContent=m;e.classList.remove('show');void e.offsetWidth;e.classList.add('show')}
+
 $('regForm').addEventListener('submit',async(ev)=>{
   ev.preventDefault();
   $('regErr').classList.remove('show');
   checkName(true); checkPhone(true);
   if(qrBusy) return formError('Please wait, your QR is still being scanned.');
+
+  // FIX: Agar qrData aur upiId aa chuke hain, toh state.qr ko automatically true set kar do taaki error na aaye
+  if(qrData && upiId) {
+    state.qr = true;
+  }
+
   const bad=[];
-  if(!state.name) bad.push('fgName'); if(!state.phone) bad.push('fgPhone');
-  if(!state.qr){ bad.push('fgQr'); if(!qrData) setField('fgQr','hQr',false,'Upload your UPI QR to continue.',true); }
+  if(!state.name) bad.push('fgName'); 
+  if(!state.phone) bad.push('fgPhone');
+  
+  // FIX: Strict check ke bajaye ab yeh check karega ki agar data nahi hai tabhi error de
+  if(!state.qr && !qrData){ 
+    bad.push('fgQr'); 
+    setField('fgQr','hQr',false,'Upload your UPI QR to continue.',true); 
+  }
+  
   if(!state.agree){ bad.push('agreeRow'); $('agreeRow').classList.add('bad'); }
+  
   if(bad.length){
     bad.forEach(id=>shake($(id)));
     $(bad[0]).scrollIntoView({behavior:'smooth',block:'center'});
     return formError('Please fix the highlighted fields.');
   }
+
   const b=$('btnReg'); b.disabled=true; $('btnRegTx').innerHTML='<span class="spin"></span> Creating account...';
   try{
     const r=await api('/api/register',{
@@ -433,6 +439,7 @@ $('regForm').addEventListener('submit',async(ev)=>{
     b.disabled=false; $('btnRegTx').textContent='Create account & start earning';
   }
 });
+
 function confetti(root,n){
   root.querySelectorAll('.conf').forEach(x=>x.remove());
   for(let i=0;i<n;i++){
@@ -444,7 +451,6 @@ function confetti(root,n){
 }
 function showWelcome(name){ $('wName').textContent=name; const w=$('welcome'); w.classList.remove('hidden'); confetti(w,50); }
 
-/* =================== WALLET / TASK =================== */
 function paintWallet(){
   if(!me) return;
   const ut=me.unpaidTasks-(pendingClaim?1:0);
@@ -470,7 +476,6 @@ function paintTask(){
   paintWallet();
 }
 
-/* ADSTERRA AD UNITS */
 const AD_UNITS=[
   {w:300,h:250,key:'9e83822f9c088e0502cd3a55598627fc'},
   {native:true,h:300,id:'2d557d50f49e3a3c731c6c8c460fbe23'},
@@ -573,7 +578,6 @@ $('btnRestart').onclick=async()=>{
   try{ me=await api('/api/restart',{token}); render(true);}catch(e){await refresh(true)}
 };
 
-/* payment tick */
 function showTick(){
   if(!me.tick || !$('success').classList.contains('hidden')) return;
   $('sName').textContent=me.name; $('sAmt').textContent='₹'+me.tick.amount;
@@ -609,7 +613,6 @@ async function refresh(force){
   }
 }
 
-/* =================== ADMIN LOGIN (same page) =================== */
 $('adminLink').onclick=()=>{ $('adminModal').classList.remove('hidden'); $('adminErr').classList.remove('show'); setTimeout(()=>$('adminPw').focus(),50); };
 $('adminCancel').onclick=()=>{ $('adminModal').classList.add('hidden'); $('adminPw').value=''; };
 $('adminModal').addEventListener('click',e=>{ if(e.target===$('adminModal')) $('adminCancel').onclick(); });
@@ -618,8 +621,8 @@ $('adminForm').addEventListener('submit',async(ev)=>{
   const pw=$('adminPw').value; if(!pw) return;
   const b=$('adminGo'); b.disabled=true; $('adminGoTx').innerHTML='<span class="spin"></span>';
   try{
-    const r=await api('/api/admin/login',{password:pw});
-    sessionStorage.setItem('adm',r.token);
+    const r=api('/api/admin/login',{password:pw});
+    sessionStorage.setItem('adm',(await r).token);
     $('adminGoTx').textContent='✓ Welcome';
     setTimeout(()=>{ location.href='/admin.html'; },500);
   }catch(e){
