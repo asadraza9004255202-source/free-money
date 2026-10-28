@@ -133,6 +133,17 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 @keyframes bump{40%{transform:scale(1.3);color:#fde68a}}
 .bounce{display:inline-block;animation:bounce .8s ease infinite}
 @keyframes bounce{50%{transform:translateY(-10px)}}
+/* admin login (same page) */
+.foot{max-width:640px;margin:0 auto;padding:0 16px 40px;text-align:center}
+.foot a{color:var(--mute);font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
+.foot a:hover{color:var(--blue)}
+.modal{position:fixed;inset:0;z-index:70;background:rgba(3,8,18,.78);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);animation:fade0 .25s ease}
+.modal .box{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;animation:popin .4s cubic-bezier(.34,1.56,.64,1)}
+.modal input{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line);background:#0e1626;color:var(--ink);font-size:16px;margin-top:12px}
+.modal input:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 4px rgba(56,189,248,.18)}
+.modal .row{display:flex;gap:10px}
+.modal .btn.s{background:#26344d;color:var(--ink);flex:0 0 38%}
+@keyframes fade0{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -230,6 +241,22 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
   </div>
 </div>
 
+<div class="foot"><a id="adminLink">Admin login</a></div>
+
+<!-- ADMIN LOGIN -->
+<div id="adminModal" class="modal hidden">
+  <form class="box" id="adminForm" autocomplete="off">
+    <b style="font-size:18px">🛠 Admin login</b>
+    <div style="color:var(--mute);font-size:13px;margin-top:4px">Only the site owner can sign in here.</div>
+    <input id="adminPw" type="password" placeholder="Admin password" autocomplete="current-password">
+    <div class="formerr" id="adminErr"></div>
+    <div class="row">
+      <button class="btn s" type="button" id="adminCancel">Cancel</button>
+      <button class="btn" type="submit" id="adminGo"><span id="adminGoTx">Login</span></button>
+    </div>
+  </form>
+</div>
+
 <!-- WELCOME (after register) -->
 <div id="welcome" class="ov hidden">
   <svg viewBox="0 0 120 120" class="pop"><circle class="c" cx="60" cy="60" r="48"/><path class="t" d="M36 62 L54 80 L86 44"/></svg>
@@ -247,7 +274,7 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
   <button class="btn" id="btnAck">Keep earning</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script src="/jsqr.js"></script>
 <script>
 const $=(id)=>document.getElementById(id);
 let cfg={adsPerTask:25,seconds:5,rewardPerTask:1,minTasks:5}, token=localStorage.getItem('ar_token'), me=null, shown=null, timer=null, remaining=0, running=false;
@@ -310,15 +337,21 @@ $('fAgree').addEventListener('change',()=>{state.agree=$('fAgree').checked;$('ag
 
 /* ---- QR reading ---- */
 function loadImg(file){return new Promise((res,rej)=>{const i=new Image(),u=URL.createObjectURL(file);i.onload=()=>{URL.revokeObjectURL(u);res(i)};i.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('bad'))};i.src=u;});}
-function scanImage(img){
-  if(typeof jsQR!=='function') throw new Error('lib');
-  const big=Math.max(img.width,img.height);
-  for(const m of [900,1400,600,400,1800]){
-    const s=Math.min(2,m/big), w=Math.max(40,Math.round(img.width*s)), h=Math.max(40,Math.round(img.height*s));
-    const c=document.createElement('canvas'); c.width=w; c.height=h;
-    const g=c.getContext('2d',{willReadFrequently:true}); g.fillStyle='#fff'; g.fillRect(0,0,w,h); g.drawImage(img,0,0,w,h);
-    const d=g.getImageData(0,0,w,h), r=jsQR(d.data,w,h,{inversionAttempts:'attemptBoth'});
-    if(r&&r.data) return r.data;
+async function scanImage(img){
+  const hasJs=(typeof jsQR==='function'), hasBd=('BarcodeDetector' in window);
+  if(!hasJs && !hasBd) throw new Error('lib');
+  if(hasJs){
+    const big=Math.max(img.width,img.height);
+    for(const m of [900,1400,600,400,1800]){
+      const s=Math.min(2,m/big), w=Math.max(40,Math.round(img.width*s)), h=Math.max(40,Math.round(img.height*s));
+      const c=document.createElement('canvas'); c.width=w; c.height=h;
+      const g=c.getContext('2d',{willReadFrequently:true}); g.fillStyle='#fff'; g.fillRect(0,0,w,h); g.drawImage(img,0,0,w,h);
+      const d=g.getImageData(0,0,w,h), r=jsQR(d.data,w,h,{inversionAttempts:'attemptBoth'});
+      if(r&&r.data) return r.data;
+    }
+  }
+  if(hasBd){ // browser ka apna QR reader (backup)
+    try{ const r=await new BarcodeDetector({formats:['qr_code']}).detect(img); if(r&&r[0]&&r[0].rawValue) return r[0].rawValue; }catch(e){}
   }
   return null;
 }
@@ -575,6 +608,26 @@ async function refresh(force){
     if(e.status===404){ localStorage.removeItem('ar_token'); token=null; show('vReg'); }
   }
 }
+
+/* =================== ADMIN LOGIN (same page) =================== */
+$('adminLink').onclick=()=>{ $('adminModal').classList.remove('hidden'); $('adminErr').classList.remove('show'); setTimeout(()=>$('adminPw').focus(),50); };
+$('adminCancel').onclick=()=>{ $('adminModal').classList.add('hidden'); $('adminPw').value=''; };
+$('adminModal').addEventListener('click',e=>{ if(e.target===$('adminModal')) $('adminCancel').onclick(); });
+$('adminForm').addEventListener('submit',async(ev)=>{
+  ev.preventDefault();
+  const pw=$('adminPw').value; if(!pw) return;
+  const b=$('adminGo'); b.disabled=true; $('adminGoTx').innerHTML='<span class="spin"></span>';
+  try{
+    const r=await api('/api/admin/login',{password:pw});
+    sessionStorage.setItem('adm',r.token);
+    $('adminGoTx').textContent='✓ Welcome';
+    setTimeout(()=>{ location.href='/admin.html'; },500);
+  }catch(e){
+    const er=$('adminErr'); er.textContent=e.message; er.classList.remove('show'); void er.offsetWidth; er.classList.add('show');
+    $('adminPw').value=''; $('adminPw').focus();
+    b.disabled=false; $('adminGoTx').textContent='Login';
+  }
+});
 
 (async function init(){
   try{ cfg=await api('/api/config'); }catch(e){}
