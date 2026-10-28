@@ -18,8 +18,8 @@ const ADMIN_TTL_MS = 12 * 3600e3;                              // admin login 12
 
 // ---------- storage: Postgres (real) ya data.json (sirf local test) ----------
 const DB_FILE = path.join(__dirname, 'data.json');
-const users = [];                 // memory cache (QR photo cache me nahi rakhte)
-const tokIdx = new Map();         // token -> user (tez lookup)
+const users = [];               // memory cache (QR photo cache me nahi rakhte)
+const tokIdx = new Map();       // token -> user (tez lookup)
 let pool = null;
 
 const stripQr = (u) => { const { qr, ...rest } = u; return rest; };
@@ -174,12 +174,11 @@ app.get('/api/config', (req, res) =>
 
 app.post('/api/register', ah(async (req, res) => {
   const ip = req.ip;
-  // sirf galat koshishein aur safal accounts gine jate hain (shared mobile network par asli users block na hon)
   if (blocked('regok:' + ip, 20, 3600e3) || blocked('regbad:' + ip, 40, 3600e3))
     return res.status(429).json({ error: 'Too many attempts from this network. Please try again after some time.' });
   const bad = (code, error) => { record('regbad:' + ip); return res.status(code).json({ error }); };
   const b = req.body || {};
-  if (b.website) { record('regbad:' + ip); return res.json({ token: crypto.randomBytes(16).toString('hex') }); } // honeypot
+  if (b.website) { record('regbad:' + ip); return res.json({ token: crypto.randomBytes(16).toString('hex') }); }
   const name = String(b.name || '').trim().replace(/\s+/g, ' ');
   const phone = String(b.phone || '').replace(/\D/g, '');
   const upi = String(b.upi || '').trim().toLowerCase();
@@ -305,7 +304,7 @@ app.post('/api/admin/pay/:id', auth, ah(async (req, res) => {
   u.payments = [...u.payments, { amount, tasks: unpaid, at: Date.now() }];
   u.tick = { amount, at: Date.now() };
   try { await save(u); }
-  catch (e) { Object.assign(u, prev); throw e; }   // database me na likha jaye to paid mark mat karo
+  catch (e) { Object.assign(u, prev); throw e; }
   res.json({ ok: true, amount });
 }));
 
