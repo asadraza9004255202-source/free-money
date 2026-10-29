@@ -279,7 +279,7 @@ h1{font-size:24px;margin:6px 0 4px;animation:slideDown .7s ease both}
 </script>
 <script>
 const $=(id)=>document.getElementById(id);
-let cfg={adsPerTask:25,seconds:5,rewardPerTask:1,minTasks:5}, token=localStorage.getItem('ar_token'), me=null, shown=null, timer=null, remaining=0, running=false;
+let cfg={adsPerTask:2,seconds:5,rewardPerTask:1,minTasks:5}, token=localStorage.getItem('ar_token'), me=null, shown=null, timer=null, remaining=0, running=false;
 let qrData=null, upiId=null, qrBusy=false, formStart=Date.now();
 
 async function api(url,body){
@@ -474,7 +474,7 @@ function paintTask(){
   const w=me.adsWatched, T=cfg.adsPerTask;
   $('cnt').textContent=w; $('barI').style.width=(w/T*100)+'%';
   $('taskTitle').textContent='Task #'+(me.tasksDone+1);
-  const g=$('grid'); g.innerHTML='';
+  const g=$('grid'); g.innerHTML=''; g.style.gridTemplateColumns='repeat('+Math.min(T,10)+',minmax(0,52px))'; g.style.justifyContent='center';
   for(let i=0;i<T;i++){
     const d=document.createElement('div'); d.className='tile'+(i<w?' done':(i===w?' cur':''));
     d.textContent=i<w?'✓':i+1; g.appendChild(d);
